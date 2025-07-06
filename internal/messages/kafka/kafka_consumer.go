@@ -1,9 +1,10 @@
-package kafka
+package messages
 
 import (
 	"context"
 	"errors"
 	"github.com/confluentinc/confluent-kafka-go/kafka"
+	"log"
 	"sync"
 	"time"
 )
@@ -79,6 +80,7 @@ func (c *Consumer) consumeMessage(ctx context.Context) {
 			msgCopy := msg
 			go func() {
 				//process message
+				log.Println(msgCopy)
 
 			}()
 
