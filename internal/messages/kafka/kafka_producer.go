@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/confluentinc/confluent-kafka-go/kafka"
+	dto "github.com/harshgupta9473/chatapp/internal/messages/dto"
 	"time"
 )
 
@@ -11,17 +12,8 @@ type Producer struct {
 	producer *kafka.Producer
 }
 
-func NewProducer() (*Producer, error) {
-	p, err := kafka.NewProducer(&kafka.ConfigMap{
-		"bootstrap.servers":            "cfg.BootstrapServers",
-		"client.id":                    " cfg.ClientID",
-		"acks":                         "all",
-		"delivery.timeout.ms":          5000,
-		"queue.buffering.max.messages": 100000,
-		"linger.ms":                    5,
-		"batch.size":                   16384,
-		"compression.type":             "snappy",
-	})
+func NewProducer(kafkaConfig *kafka.ConfigMap) (*Producer, error) {
+	p, err := kafka.NewProducer(kafkaConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -30,7 +22,7 @@ func NewProducer() (*Producer, error) {
 	}, nil
 }
 
-func (p *Producer) PublishMessage(ctx context.Context, message string, topic string) error {
+func (p *Producer) PublishMessage(ctx context.Context, message dto.DomainMessage, topic string) error {
 	data, err := json.Marshal(message)
 	if err != nil {
 		return err
@@ -41,20 +33,20 @@ func (p *Producer) PublishMessage(ctx context.Context, message string, topic str
 			Topic:     &topic,
 			Partition: kafka.PartitionAny,
 		},
-		Key:   []byte(message),
+		Key:   []byte(message.Header.UserID),
 		Value: data,
 		Headers: []kafka.Header{
 			{
 				Key:   "packet_name",
-				Value: []byte(message),
+				Value: []byte(message.Header.PacketName),
 			},
 			{
 				Key:   "source_service",
-				Value: []byte(message),
+				Value: []byte(message.Header.SourceService),
 			},
 			{
 				Key:   "destination_service",
-				Value: []byte(message),
+				Value: []byte(message.Header.DestinationService),
 			},
 		},
 		Timestamp: time.Now(),

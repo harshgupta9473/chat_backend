@@ -20,5 +20,5 @@ func NewMessageRouter(
 }
 
 func (m *ChatMessageRouter) RegisterWithConsumer() {
-	//m.Consumer.RegisterHandler()
+	m.Consumer.RegisterHandler("sm", m.ChatMessageHandler.SendMessageHandler)
 }

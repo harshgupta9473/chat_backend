@@ -1,1 +1,1 @@
-package chat
+package chatservice
