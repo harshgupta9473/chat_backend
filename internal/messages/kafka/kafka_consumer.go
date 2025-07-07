@@ -2,43 +2,39 @@ package messages
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"github.com/confluentinc/confluent-kafka-go/kafka"
+	dto "github.com/harshgupta9473/chatapp/internal/messages/dto"
 	"log"
 	"sync"
 	"time"
 )
 
-type MessageHandler func(ctx context.Context, msg string) error
+type MessageHandler func(ctx context.Context, msg *dto.DomainMessage) error
 
 type Consumer struct {
 	consumer *kafka.Consumer
 	handlers map[string]MessageHandler
+	topics   []string
+	ctx      context.Context
+	cancel   context.CancelFunc
 	wg       sync.WaitGroup
 	stop     chan struct{}
 }
 
-func NewConsumer() (*Consumer, error) {
-	c, err := kafka.NewConsumer(&kafka.ConfigMap{
-		"bootstrap.servers":         "cfg.BootstrapServers",
-		"group.id":                  "cfg.GroupID",
-		"auto.offset.reset":         "earliest",
-		"enable.auto.commit":        false,
-		"max.poll.interval.ms":      300000, // 5 minutes
-		"session.timeout.ms":        30000,  // 30 seconds
-		"heartbeat.interval.ms":     10000,  // 10 seconds
-		"fetch.min.bytes":           1,
-		"fetch.max.bytes":           52428800, // 50MB
-		"max.partition.fetch.bytes": 1048576,  // 1MB
-	})
-
+func NewConsumer(kafkaConfig *kafka.ConfigMap, topics []string) (*Consumer, error) {
+	c, err := kafka.NewConsumer(kafkaConfig)
 	if err != nil {
 		return nil, err
 	}
-
+	ctx, cancel := context.WithCancel(context.Background())
 	return &Consumer{
 		consumer: c,
 		handlers: make(map[string]MessageHandler),
+		topics:   topics,
+		ctx:      ctx,
+		cancel:   cancel,
 		stop:     make(chan struct{}),
 	}, nil
 }
@@ -86,4 +82,33 @@ func (c *Consumer) consumeMessage(ctx context.Context) {
 
 		}
 	}
+}
+
+func (c *Consumer) processMessage(ctx context.Context, msg *kafka.Message) error {
+	// Parse the domain message
+	var domainMsg dto.DomainMessage
+	if err := json.Unmarshal(msg.Value, &domainMsg); err != nil {
+		return err
+	}
+
+	// Get packet name from message or header
+	packetName := domainMsg.Header.PacketName
+	if packetName == "" {
+		log.Println("WARNING: no packet name provided")
+		return nil
+	}
+
+	// Find handler for this packet type
+	handler, exists := c.handlers[packetName]
+	if !exists {
+		log.Printf("Received message with no handler for packet '%s'", packetName)
+		return nil
+	}
+
+	// Create context with timeout
+	msgCtx, cancel := context.WithTimeout(ctx, 30*time.Second)
+	defer cancel()
+
+	// Call the handler
+	return handler(msgCtx, &domainMsg)
 }
