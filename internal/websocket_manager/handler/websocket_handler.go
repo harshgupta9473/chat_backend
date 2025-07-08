@@ -1,32 +1,23 @@
-package websocket_manager
+package handlers
 
 import (
 	"github.com/gorilla/websocket"
-	"github.com/harshgupta9473/chatapp/internal/messages/kafka"
+	messages2 "github.com/harshgupta9473/chatapp/internal/messages"
+	"github.com/harshgupta9473/chatapp/internal/websocket_manager"
 	"log"
 	"net/http"
 )
 
 type WebSocketHandler struct {
 	Upgrader         *websocket.Upgrader
-	WebsocketManager *WebSocketConnectionManager
-	KafkaProducer    *messages.Producer
-	KafkaConsumer    *messages.Consumer
+	WebsocketManager *websocket_service.WebSocketConnectionManager
 }
 
 func NewWebSocketHandler() *WebSocketHandler {
 	var err error
 	handler := &WebSocketHandler{
 		Upgrader:         &upgrader,
-		WebsocketManager: NewWebSocketConnectionManager(),
-	}
-	handler.KafkaProducer, err = messages.NewProducer()
-	if err != nil {
-		return &WebSocketHandler{}
-	}
-	handler.KafkaConsumer, err = messages.NewConsumer()
-	if err != nil {
-		return &WebSocketHandler{}
+		WebsocketManager: websocket_service.NewWebSocketConnectionManager(),
 	}
 	return handler
 }

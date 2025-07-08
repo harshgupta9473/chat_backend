@@ -1,12 +1,18 @@
 package kafka
 
 import (
+	"context"
+	"errors"
 	"github.com/confluentinc/confluent-kafka-go/kafka"
-	messages "github.com/harshgupta9473/chatapp/internal/messages/kafka"
+	messages "github.com/harshgupta9473/chatapp/internal/messages"
 )
 
 type KafkaProducer struct {
 	producer *messages.Producer
+}
+
+type EventEmitter interface {
+	Emit(ctx context.Context, data interface{}, packetName string, mobilenumber string) error
 }
 
 func NewKafkaProducer() (*KafkaProducer, error) {
@@ -29,6 +35,26 @@ func NewKafkaProducer() (*KafkaProducer, error) {
 	}, nil
 }
 
-func (p *KafkaProducer) SendMessage(msg *kafka.Message) error {
+func (p *KafkaProducer) PublishEvents(ctx context.Context, data interface{}, packetName string, mobilenumber string) error {
+	if packetName == "" {
+		return errors.New("invalid packet name")
+	}
+	if packetName == "cm" {
+		msg, err := messages.NewDomainMessage(
+			mobilenumber,
+			packetName,
+			"chat_service",
+			"websocket_service",
+			data,
+		)
+		if err != nil {
+			return err
+		}
+		return p.producer.PublishMessage(ctx, msg, "chat_res")
+	}
+	return nil
+}
 
+func (p *KafkaProducer) Emit(ctx context.Context, data interface{}, packetName string, mobilenumber string) error {
+	return p.PublishEvents(ctx, data, packetName, mobilenumber)
 }

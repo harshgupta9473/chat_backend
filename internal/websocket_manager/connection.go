@@ -1,4 +1,4 @@
-package websocket_manager
+package websocket_service
 
 import "github.com/gorilla/websocket"
 

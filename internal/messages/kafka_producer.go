@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/confluentinc/confluent-kafka-go/kafka"
-	dto "github.com/harshgupta9473/chatapp/internal/messages/dto"
 	"time"
 )
 
@@ -22,7 +21,7 @@ func NewProducer(kafkaConfig *kafka.ConfigMap) (*Producer, error) {
 	}, nil
 }
 
-func (p *Producer) PublishMessage(ctx context.Context, message dto.DomainMessage, topic string) error {
+func (p *Producer) PublishMessage(ctx context.Context, message *DomainMessage, topic string) error {
 	data, err := json.Marshal(message)
 	if err != nil {
 		return err
@@ -33,7 +32,7 @@ func (p *Producer) PublishMessage(ctx context.Context, message dto.DomainMessage
 			Topic:     &topic,
 			Partition: kafka.PartitionAny,
 		},
-		Key:   []byte(message.Header.UserID),
+		Key:   []byte(message.Header.MobileNumber),
 		Value: data,
 		Headers: []kafka.Header{
 			{

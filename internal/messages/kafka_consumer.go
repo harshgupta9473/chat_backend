@@ -5,13 +5,12 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/confluentinc/confluent-kafka-go/kafka"
-	dto "github.com/harshgupta9473/chatapp/internal/messages/dto"
 	"log"
 	"sync"
 	"time"
 )
 
-type MessageHandler func(ctx context.Context, msg *dto.DomainMessage) error
+type MessageHandler func(ctx context.Context, msg *DomainMessage) error
 
 type Consumer struct {
 	consumer *kafka.Consumer
@@ -86,7 +85,7 @@ func (c *Consumer) consumeMessage(ctx context.Context) {
 
 func (c *Consumer) processMessage(ctx context.Context, msg *kafka.Message) error {
 	// Parse the domain message
-	var domainMsg dto.DomainMessage
+	var domainMsg DomainMessage
 	if err := json.Unmarshal(msg.Value, &domainMsg); err != nil {
 		return err
 	}

@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	messages "github.com/harshgupta9473/chatapp/internal/messages/kafka"
+	"github.com/harshgupta9473/chatapp/internal/messages"
 )
 
 type ChatMessageRouter struct {

@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"github.com/harshgupta9473/chatapp/internal/chat/dto"
 	chatservice "github.com/harshgupta9473/chatapp/internal/chat/services"
-	messagesdto "github.com/harshgupta9473/chatapp/internal/messages/dto"
+	messagesdto "github.com/harshgupta9473/chatapp/internal/messages"
 )
 
 type ChatMessageHandler struct {
