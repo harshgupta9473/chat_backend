@@ -11,6 +11,10 @@ type ConsumerHandler struct {
 	websocketManager *websocket_service.WebSocketConnectionManager
 }
 
+func NewConsumerHandler(websocketManager *websocket_service.WebSocketConnectionManager) *ConsumerHandler {
+	return &ConsumerHandler{websocketManager: websocketManager}
+}
+
 func (c *ConsumerHandler) SendMessageToUser(ctx context.Context, msg *messages2.DomainMessage) error {
 	conn, err := c.websocketManager.GetConnection(msg.Header.MobileNumber)
 	if err != nil {

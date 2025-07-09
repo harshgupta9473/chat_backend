@@ -16,7 +16,7 @@ type ProducerRouterHandler struct {
 	cancel   context.CancelFunc
 }
 
-func NewRouterHandler() (*ProducerRouterHandler, error) {
+func NewProducerRouterHandler() (*ProducerRouterHandler, error) {
 	handlers := make(map[string]Handler)
 	ctx, cancel := context.WithCancel(context.Background())
 	producrHandler := &ProducerRouterHandler{

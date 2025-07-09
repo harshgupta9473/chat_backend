@@ -43,11 +43,11 @@ func (c *Consumer) RegisterHandler(packetType string, handler MessageHandler) {
 }
 
 // starts consuming msg
-func (c *Consumer) Start(ctx context.Context, topics []string) error {
-	if len(topics) == 0 {
+func (c *Consumer) Start(ctx context.Context) error {
+	if len(c.topics) == 0 {
 		return errors.New("no topics specified")
 	}
-	if err := c.consumer.SubscribeTopics(topics, nil); err != nil {
+	if err := c.consumer.SubscribeTopics(c.topics, nil); err != nil {
 		return err
 	}
 	c.wg.Add(1)

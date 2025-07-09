@@ -17,10 +17,11 @@ type WebSocketHandler struct {
 
 func NewWebSocketHandler(
 	producerhandler *ProducerRouterHandler,
+	websocketManager *websocket_service.WebSocketConnectionManager,
 ) *WebSocketHandler {
 	handler := &WebSocketHandler{
 		Upgrader:         &upgrader,
-		WebsocketManager: websocket_service.NewWebSocketConnectionManager(),
+		WebsocketManager: websocketManager,
 		ProducerHandler:  producerhandler,
 	}
 	return handler

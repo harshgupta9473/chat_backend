@@ -5,10 +5,10 @@ import (
 	"github.com/harshgupta9473/chatapp/internal/messages"
 )
 
-func NewChatConsumer() (*messages.Consumer, error) {
+func NewWebSocketKafkaConsumer() (*messages.Consumer, error) {
 	kafkaConfig := &kafka.ConfigMap{
 		"bootstrap.servers":         "localhost:9092",
-		"group.id":                  "chat_service",
+		"group.id":                  "websocket_service",
 		"auto.offset.reset":         "earliest",
 		"enable.auto.commit":        false,
 		"max.poll.interval.ms":      300000, // 5 minutes
@@ -18,7 +18,7 @@ func NewChatConsumer() (*messages.Consumer, error) {
 		"fetch.max.bytes":           52428800, // 50MB
 		"max.partition.fetch.bytes": 1048576,  // 1MB
 	}
-	consumer, err := messages.NewConsumer(kafkaConfig, []string{"chat_req"})
+	consumer, err := messages.NewConsumer(kafkaConfig, []string{"chat_res"})
 	if err != nil {
 		return nil, err
 	}

@@ -10,7 +10,7 @@ type KafkaProducer struct {
 	producer *messages.Producer
 }
 
-func NewKafkaProducer() (*KafkaProducer, error) {
+func NewWebSocketKafkaProducer() (*KafkaProducer, error) {
 	config := &kafka.ConfigMap{
 		"bootstrap.servers":            "localhost:9092",
 		"client.id":                    "websocket_service",
