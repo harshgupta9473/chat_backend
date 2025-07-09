@@ -16,6 +16,8 @@ func NewMessageRouter(
 	}
 }
 
-func (m *WebSocketMessageRouter) RegisterWithConsumer() {
-	//	m.Consumer.RegisterHandler("sm", )
+func (m *WebSocketMessageRouter) RegisterWithConsumer(
+	consumerHandler *ConsumerHandler,
+) {
+	m.Consumer.RegisterHandler("sm", consumerHandler.SendMessageToUser)
 }
