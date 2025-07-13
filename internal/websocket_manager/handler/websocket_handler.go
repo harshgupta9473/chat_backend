@@ -69,12 +69,12 @@ func (ws *WebSocketHandler) WebsocketHandler() http.HandlerFunc {
 
 func (ws *WebSocketHandler) processmessage(msg *messages2.DomainMessage) {
 	if msg.Header.DestinationService == "" {
-		log.Println("invalid destination service")
+		log.Println("invalid destination services")
 		return
 	}
 	handler, ok := ws.ProducerHandler.handlers[msg.Header.DestinationService]
 	if !ok {
-		log.Println("invalid destination service no handler available")
+		log.Println("invalid destination services no handler available")
 		return
 	}
 	ctx := ws.ProducerHandler.ctx

@@ -17,7 +17,7 @@ type ChatMessageRepository struct {
 
 func NewChatMessageRepository() (*ChatMessageRepository, error) {
 	repo := &ChatMessageRepository{}
-	connStr := "host=localhost port=5432 user=myuser password=mypass dbname=mydb sslmode=disable"
+	connStr := "host=localhost port=5432 user=myuser password=superuserpassword dbname=mydb sslmode=disable"
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
 		return nil, err
