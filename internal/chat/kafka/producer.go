@@ -15,7 +15,7 @@ type EventEmitter interface {
 	Emit(ctx context.Context, data interface{}, packetName string, mobilenumber string) error
 }
 
-func NewKafkaProducer() (*KafkaProducer, error) {
+func NewKafkaChatProducer() (*KafkaProducer, error) {
 	config := &kafka.ConfigMap{
 		"bootstrap.servers":            "localhost:9092",
 		"client.id":                    "chat_service",

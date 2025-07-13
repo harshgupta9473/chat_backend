@@ -12,6 +12,10 @@ type ChatMessageHandler struct {
 	ChatMessageService *chatservice.ChatMessageService
 }
 
+func NewChatMessageHandler(chatMessageService *chatservice.ChatMessageService) *ChatMessageHandler {
+	return &ChatMessageHandler{chatMessageService}
+}
+
 func (c *ChatMessageHandler) SendMessageHandler(ctx context.Context, msg *messagesdto.DomainMessage) error {
 	var chatmsg dto.ChatMessage
 	err := json.Unmarshal([]byte(msg.Payload), &chatmsg)

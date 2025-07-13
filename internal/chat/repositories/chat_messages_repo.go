@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/harshgupta9473/chatapp/internal/chat/dto"
+	_ "github.com/lib/pq"
 	"log"
 	"time"
 )
@@ -14,15 +15,15 @@ type ChatMessageRepository struct {
 	DB *sql.DB
 }
 
-func NewChatMessageRepository() *ChatMessageRepository {
+func NewChatMessageRepository() (*ChatMessageRepository, error) {
 	repo := &ChatMessageRepository{}
 	connStr := "host=localhost port=5432 user=myuser password=mypass dbname=mydb sslmode=disable"
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	repo.DB = db
-	return repo
+	return repo, nil
 }
 
 func (ch *ChatMessageRepository) SaveMsgInDB(ctx context.Context, chat *dto.ChatMessage) error {
@@ -115,6 +116,5 @@ func (ch *ChatMessageRepository) MarkAllMessagesAsRead(ctx context.Context, rece
 
 	rowsAffected, _ := result.RowsAffected()
 	log.Printf("Marked %d messages as read for receiver %s from sender %s", rowsAffected, receiverMobile, senderMobile)
-
 	return nil
 }
