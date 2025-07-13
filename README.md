@@ -73,10 +73,10 @@ user/client]
 
 For now:
 ```bash
-go mod download
+git clone
+go mod tidy
 # Example
-go run cmd/chat-service/main.go
-go run cmd/websocket-service/main.go
+go run cmd/server/main.go
 ```
 
 # Project Structure (WIP)
