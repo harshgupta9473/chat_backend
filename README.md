@@ -1,48 +1,92 @@
-# Chat Backend Service 🚀
+# Chat Backend (WIP) 💬
 
-A real-time chat backend built in Go with Kafka and WebSocket integration.
-
----
-
-## 🔍 Overview
-
-This service handles:
-
-- Producing and consuming chat messages using **Kafka**
-- Maintaining multiple consumer groups (e.g., `chat-service`, `websocket-service`)
-- Delivering messages to clients via **WebSocket**
+A distributed chat backend system written in Go, following microservice architecture with Kafka as the message backbone and WebSocket support for real-time communication.
 
 ---
 
-## 📦 Features
+## 🚧 Project Status
 
-- **Producer**: Emits user messages to Kafka topics (e.g., `chat.messages`)
-- **Consumer**: Reads from Kafka, writes to database, processes receipts
-- **WebSocket Bridge**: Relays real‑time messages to connected clients
-- Flexible topic structure to support:
-    - `chat.messages`
-    - `chat.read`
-    - `chat.typing`
-    - `chat.status`
+> 🛠️ This project is currently under active development.
+
+So far, the system includes:
+
+- `chat_service`: Handles chat message production and storage.
+- `user_service`: Manages users and user-related operations.
+- `websocket_service`: Pushes real-time messages to clients using WebSockets.
+- All services communicate **asynchronously** through **Kafka topics**.
 
 ---
 
-## 🛠️ Getting Started
+## 📦 Architecture Overview
 
-### Prerequisites
+user/client]
+⬇️ WebSocket
+[websocket_service]
+⬇️ Kafka (consumer)
+[chat_messages topic]
+⬆️ Kafka (producer)
+[chat_service]
+⬅️ REST/GRPC/API
+[user_service]
 
-- Go (v1.20+)
-- Kafka cluster (local or hosted)
-- Redis (for WebSocket session management)
-- (Optional) PostgreSQL / MongoDB for message storage
 
-### Configuration
 
-Create a `.env` file specifying:
+### 🔗 Communication
+- Services are **decoupled** and communicate via **Kafka topics**.
+- `websocket_service` consumes Kafka messages and delivers them to connected users.
+- `chat_service` both produces and consumes from Kafka.
+- `user_service` currently handles authentication and user data.
 
-```dotenv
-KAFKA_BROKERS=localhost:9092
-CHAT_SERVICE_GROUP=chat-service-group
-WS_SERVICE_GROUP=websocket-service-group
-DB_URL=...
-REDIS_URL=...
+---
+
+## 🧩 Services
+
+### `chat_service`
+- Produces messages to Kafka
+- Consumes for post-processing or storage
+- Handles chat business logic
+
+### `websocket_service`
+- Maintains active WebSocket connections
+- Subscribed to Kafka topics like `chat.messages`
+- Delivers messages to clients in real-time
+
+### `user_service`
+- User creation, login, and auth (in progress)
+- Will likely use REST or gRPC for communication
+
+---
+
+## 🧰 Tech Stack
+
+- **Language**: Go
+- **Messaging**: Kafka (via [confluent-kafka-go](https://github.com/confluentinc/confluent-kafka-go))
+- **Real-time**: WebSocket
+- **Data Storage**: TBD (likely PostgreSQL, Redis)
+- **Architecture**: Microservices
+
+---
+
+## 🔧 Running Locally
+
+> Setup instructions coming soon.
+
+For now:
+```bash
+go mod download
+# Example
+go run cmd/chat-service/main.go
+go run cmd/websocket-service/main.go
+```
+
+# Project Structure (WIP)
+```bash
+chat_backend/
+├── internal/
+│   │──messages
+│   ├── chat-service/
+│   ├── websocket-service/
+│   └── user-service/
+├── cmd/
+│   ├── server/main.go
+└── README.md
